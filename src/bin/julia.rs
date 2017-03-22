@@ -6,7 +6,7 @@ extern crate palette;
 extern crate simd;
 extern crate image;
 
-use show::Visible;
+use show::{Visible, Rotation};
 use image::{Rgba, RgbaImage};
 use num_complex::Complex;
 
@@ -119,15 +119,25 @@ impl Visible for Fractal {
                 }
             }
         }
-    
+        
         &self.img
     }
 }
 
 fn main() {
+    let mut rot = Rotation::R0;
+    if let Some(r) = std::env::args().nth(1) {
+        match &r as &str {
+            "0" => rot = Rotation::R0,
+            "90" => rot = Rotation::R90,
+            "180" => rot = Rotation::R180,
+            "270" => rot = Rotation::R270,
+            _ => ()
+        }
+    }
     Fractal::new(FractalSettings {
         width: 600,
         height: 400,
         n_iter: 200
-    }).show();
+    }).show(rot);
 }
