@@ -4,7 +4,6 @@ extern crate input;
 extern crate graphics;
 
 use image::RgbaImage;
-use graphics::math::Matrix2d;
 
 pub enum Rotation {
     R0,
@@ -15,27 +14,30 @@ pub enum Rotation {
 
 pub trait Visible : Sized {
     fn update(&mut self, t: f64) -> &RgbaImage;
+    fn maybe_update(&mut self, t: f64) -> Option<&RgbaImage> {
+        Some(self.update(t))
+    }
     fn cursor(&mut self, x: f64, y: f64) {}
 
     fn show(mut self, rot: Rotation) {
         use piston_window::*;
-        
+
         let (mut window, mut texture) = {
             let img0 = self.update(0.0);
-            
+
             let (width, height) = match rot {
-                Rotation::R0  | Rotation::R180 => (img0.width(), img0.height()),
+                Rotation::R0 | Rotation::R180 => (img0.width(), img0.height()),
                 Rotation::R90 | Rotation::R270 => (img0.height(), img0.width())
             };
-            
+
             let opengl = OpenGL::V3_2;
-            let mut window: PistonWindow =
-                WindowSettings::new("piston: image", [width, height])
+            let mut window: PistonWindow = WindowSettings::new("piston: image", [width, height])
                 .exit_on_esc(true)
                 .opengl(opengl)
+                .decorated(true)
                 .build()
                 .unwrap();
-            
+
             let texture = Texture::from_image(
                 &mut window.factory,
                 img0,
@@ -43,12 +45,11 @@ pub trait Visible : Sized {
             ).unwrap();
             (window, texture)
         };
-        
+
         let mut t = 0.0;
-        //window.set_lazy(true);
         while let Some(e) = window.next() {
             use input::{Input, Motion};
-            use graphics::math::multiply;
+
             println!("{:3.5} {:?}", t, e);
             match e {
                 Input::Render(args) => {
@@ -72,5 +73,11 @@ pub trait Visible : Sized {
                 _ => ()
             }
         }
+    }
+}
+
+impl Visible for RgbaImage {
+    fn update(&mut self, t: f64) -> &RgbaImage {
+        self
     }
 }
