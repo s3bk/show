@@ -19,7 +19,7 @@ pub trait Visible : Sized {
     }
     fn cursor(&mut self, x: f64, y: f64) {}
 
-    fn show(mut self, rot: Rotation) {
+    fn show(&mut self, rot: Rotation) {
         use piston_window::*;
 
         let (mut window, mut texture) = {
