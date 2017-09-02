@@ -17,8 +17,7 @@ struct FractalSettings {
     n_iter: u32,
 }
 
-use std::time::{Instant, Duration};
-use palette::{Gradient, Lch};
+use palette::{Gradient};
 struct Fractal {
     img: RgbaImage,
     s: FractalSettings,

@@ -48,11 +48,11 @@ pub trait Visible : Sized {
 
         let mut t = 0.0;
         while let Some(e) = window.next() {
-            use input::{Input, Motion};
+            use input::{Input, Motion, Event, Loop};
 
             println!("{:3.5} {:?}", t, e);
             match e {
-                Input::Render(args) => {
+                Event::Loop(Loop::Render(args)) => {
                     t += args.ext_dt;
                     let img = self.update(t);
                     texture.update(&mut window.encoder, img).unwrap();
@@ -68,8 +68,8 @@ pub trait Visible : Sized {
                         image(&texture, transform, g);
                     });
                 },
-                Input::Move(Motion::MouseCursor(x, y)) => self.cursor(x, y),
-                Input::Update(args) => t += args.dt,
+                Event::Input(Input::Move(Motion::MouseCursor(x, y))) => self.cursor(x, y),
+                Event::Loop(Loop::Update(args)) => t += args.dt,
                 _ => ()
             }
         }
